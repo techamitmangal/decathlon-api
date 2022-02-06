@@ -1,2 +1,1 @@
 # decathlon-api
-decathlon-api
