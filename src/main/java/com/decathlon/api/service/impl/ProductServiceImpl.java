@@ -10,9 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import com.decathlon.api.dto.ProductDto;
-import com.decathlon.api.dto.UserDto;
 import com.decathlon.api.entities.ProductEntity;
-import com.decathlon.api.entities.UserEntity;
 import com.decathlon.api.repositories.ProductRepository;
 import com.decathlon.api.service.ProductService;
 

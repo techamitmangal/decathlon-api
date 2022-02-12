@@ -3,8 +3,11 @@ package com.decathlon.api.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +23,8 @@ import com.decathlon.api.service.ProductService;
 @RestController
 @RequestMapping("/v1/api/")
 public class ProductController {
+	
+	private final Logger LOG = LoggerFactory.getLogger(getClass());
 	
 	@Autowired
 	ProductService productService ;
@@ -141,8 +146,11 @@ public class ProductController {
 			BeanUtils.copyProperties(addProductReqModel, productDto);
 			
 			ProductDto productDtoRes = productService.addProductService(productDto);
-			BeanUtils.copyProperties(addProductResModel, productDtoRes);
-			
+			if (productDtoRes!=null) {
+				addProductResModel.setStatusCode(200);
+				addProductResModel.setSuccess(true);
+				addProductResModel.setMessage("Product added successfully");
+			}
 			return addProductResModel;
 		} catch (Exception e) {
 			addProductResModel.setMessage(e.getMessage());
@@ -150,15 +158,17 @@ public class ProductController {
 		}
 	}
 	
+	@Cacheable(value = "products", key = "#productId")
 	@GetMapping(path="getproductbyid")
 	public ProductDto GetUsers(@RequestParam(value="productId", defaultValue="1") long productId) {
+		LOG.info("Getting product with ID {}.", productId);
 		ProductDto productDto = new ProductDto() ;
 		productDto = productService.getProductByProductId(productId);
 		return productDto;
 	}
 	
 	@GetMapping(path="productlist")
-	public ProductListResModel GetUsers(@RequestParam(value="page", defaultValue="0") int page, 
+	public ProductListResModel GetProducts(@RequestParam(value="page", defaultValue="0") int page, 
 			@RequestParam(value="limit", defaultValue="10") int limit) {
 		
 		ProductListResModel productListResModel = new ProductListResModel ();
